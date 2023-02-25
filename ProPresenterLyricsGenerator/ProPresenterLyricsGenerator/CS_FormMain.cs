@@ -73,11 +73,14 @@ namespace ProPresenterLyricsGenerator
         }
         List<ErroList> Errors = new List<ErroList>();
         List<CS_Lyrics> FileDataLyrics = new List<CS_Lyrics>();
+        List<string> ReCopy = new List<string>();
         private void autoCorrectToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             ParserState State= ParserState.eLookingForSong;
             richTextBox2.Clear();
+            FileDataLyrics.Clear();
+            ReCopy.Clear();
             int lineNumber = 0;
             CS_Lyrics CurrentLyrics = null;
             CS_LyricsSection CurrentLyricsSection = null;
@@ -87,13 +90,20 @@ namespace ProPresenterLyricsGenerator
                 {
                     lineNumber++;
                     string dataline = cline.Trim();
+                    ReCopy.Add(dataline);
                     switch (State)
                     {
                         case ParserState.eLookingForSong:
                             {
                                 if (CurrentLyrics == null)
                                 {
-                                    if ((dataline.ToLower().IndexOf("song") >= 0)  && (dataline.ToLower().IndexOf(":") > 0))
+                                    if (dataline.ToLower().IndexOf("end of song") >= 0)
+                                    {
+                                        Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Infos: Missing break Line before End of Song" });
+                                        ReCopy[ReCopy.Count - 1] += "%1";
+                                    }
+
+                                        if ((dataline.ToLower().IndexOf("song") >= 0)  && (dataline.ToLower().IndexOf(":") > 0))
                                     {
                                         FileDataLyrics.Add(new CS_Lyrics() { MusicTitle = dataline.Substring(dataline.ToLower().IndexOf(":") + 1).Trim() });
                                         CurrentLyrics = FileDataLyrics[FileDataLyrics.Count - 1];
@@ -104,11 +114,13 @@ namespace ProPresenterLyricsGenerator
                                         FileDataLyrics.Add(new CS_Lyrics() { Author = dataline.Substring(dataline.ToLower().IndexOf(":") + 1).Trim() });
                                         CurrentLyrics = FileDataLyrics[FileDataLyrics.Count - 1];
                                         Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Not expected when looking for song name" });
+                                        ReCopy[ReCopy.Count - 1] += "%1";
                                         State = ParserState.eLookingForLyricsSection;
                                     }
                                     else if (dataline != "")
                                     {
                                         Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Not expected when looking for song name" });
+                                        ReCopy[ReCopy.Count - 1] += "%1";
                                     }
                                 }
                                 else
@@ -123,6 +135,12 @@ namespace ProPresenterLyricsGenerator
                                 if (CurrentLyrics != null)
                                 {
 
+                                    if (dataline.ToLower().IndexOf("end of song") >= 0)
+                                    {
+                                        Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Infos: Missing break Line before End of Song" });
+                                        ReCopy[ReCopy.Count - 1] += "%1";
+                                    }
+
                                     if ( (dataline.ToLower().IndexOf("artist") >= 0) && (dataline.ToLower().IndexOf(":") > 0))
                                     {
                                         if (CurrentLyrics.Author != "")
@@ -136,6 +154,7 @@ namespace ProPresenterLyricsGenerator
                                     else if (dataline != "")
                                     {
                                         Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Not expected when looking for Artist" });
+                                        ReCopy[ReCopy.Count - 1] += "%1";
                                     }
                                 }
                                 else
@@ -155,21 +174,22 @@ namespace ProPresenterLyricsGenerator
                                 {
                                     CurrentLyrics.Sections.Add(new CS_LyricsSection() { });
                                     CurrentLyricsSection = CurrentLyrics.Sections[CurrentLyrics.Sections.Count - 1];
-                                    CurrentLyricsSection.Title = dataline.Substring(dataline.ToLower().IndexOf("verse") + 5);
+                                    CurrentLyricsSection.Title = dataline;
                                     State = ParserState.eLookingForLyricsSectionLines;
                                 }
                                 else if (dataline.ToLower().IndexOf("chorus") >= 0)
                                 {
                                     CurrentLyrics.Sections.Add(new CS_LyricsSection() { });
                                     CurrentLyricsSection = CurrentLyrics.Sections[CurrentLyrics.Sections.Count - 1];
-                                    CurrentLyricsSection.Title = dataline.Substring(dataline.ToLower().IndexOf("chorus") + 5);
+                                    CurrentLyricsSection.Title = dataline;
                                     State = ParserState.eLookingForLyricsSectionLines;
                                 }
                                 else if (dataline.Length > 4)
                                 {
                                     CurrentLyrics.Sections.Add(new CS_LyricsSection() { });
                                     CurrentLyricsSection = CurrentLyrics.Sections[CurrentLyrics.Sections.Count - 1];
-                                    CurrentLyricsSection.Title = dataline;
+                                    CurrentLyricsSection.Title = "";
+                                    CurrentLyricsSection.Lines.Add(dataline);
                                     State = ParserState.eLookingForLyricsSectionLines;
                                 }
                             }
@@ -181,8 +201,8 @@ namespace ProPresenterLyricsGenerator
                                 {
                                     if (dataline.ToLower().IndexOf("end of song") >= 0)
                                     {
-                                        Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Missing break Line before End of Song" });
-
+                                        Errors.Add(new ErroList() { Line = dataline, LineNumber = lineNumber, Message = "Infos: Missing break Line before End of Song" });
+                                        ReCopy[ReCopy.Count-1]+="%1";
                                         if ((dataline.ToLower() == "end of song") || (dataline.ToLower() == "end of song."))
                                         {
                                             foreach (ErroList erroList in Errors)
@@ -195,8 +215,6 @@ namespace ProPresenterLyricsGenerator
                                             State = ParserState.eLookingForSong;
                                             CurrentLyrics = null;
                                         }
-                                        else
-                                            CurrentLyricsSection.Lines.Add(dataline);
                                     }
                                     else
                                         CurrentLyricsSection.Lines.Add(dataline);
@@ -241,12 +259,79 @@ namespace ProPresenterLyricsGenerator
                     richTextBox1.AppendText(cS_Lyrics.MusicTitle+"\n");
                     richTextBox1.AppendText(cS_Lyrics.Author + "\n");
 
-                    foreach(CS_LyricsSection cS_LyricsSection in cS_Lyrics.Sections)
+                    richTextBox1.AppendText("\n");
+
+                    foreach (CS_LyricsSection cS_LyricsSection in cS_Lyrics.Sections)
                     {
                         richTextBox1.AppendText(((CS_LyricsSection)cS_LyricsSection).Title+"\n");
                         foreach(string line in cS_LyricsSection.Lines)
                             richTextBox1.AppendText((line).Trim()+"\n");
+                        richTextBox1.AppendText("\n");
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the richttext box with the fix
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void autoCorrectToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            string toCorrest = "";
+
+            // Fix the break missing first
+            foreach (string st in ReCopy)
+            {
+                if (st.IndexOf("%1") > 0)
+                {
+                    toCorrest += "\n" + st.Substring(0,st.IndexOf("%")).Trim() + "\n\n";
+                }
+                else if (st.ToLower().IndexOf("end of song")==0)
+                {
+                    toCorrest += "\n" + st.Trim() + "\n";
+                }
+                else
+                    toCorrest += st.Trim() + "\n";
+            }
+
+            richTextBox1.Clear();
+            richTextBox1.Text = toCorrest;
+
+        }
+
+        private void generatesFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                int Counter = 0;
+                foreach (CS_Lyrics cs in FileDataLyrics)
+                {
+                    string file = "";
+                    file += "Song:" + cs.MusicTitle + "\n";
+                    file += "Artist:" + cs.Author + "\n";
+                    file += "\n";
+
+                    foreach (CS_LyricsSection csc in cs.Sections)
+                    {
+                        file += csc.Title + "\n";
+
+                        foreach (string st in csc.Lines)
+                            file += st + "\n";
+
+                        file += "\n";
+                    }
+
+                    if (cs.MusicTitle != "")
+                        File.WriteAllText(folderBrowserDialog.SelectedPath + "\\"+cs.MusicTitle.Replace(" ", "").Replace(":", "").Replace(";", "").Replace("/", "_").Replace("\\", "_").Trim() + ".txt", file);
+                    else
+                    {
+                        Counter++;
+                        File.WriteAllText(folderBrowserDialog.SelectedPath + "\\" + "_Music_" + DateTime.Now.ToString().Replace("/", "").Replace(" ", "").Replace(":", "") + Counter + ".txt", file);
+                    }
+
                 }
             }
         }

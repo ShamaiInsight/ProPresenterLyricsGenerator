@@ -33,12 +33,14 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoCorrectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.autoCorrectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.autoCorrectToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.generatesFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -80,7 +82,9 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buildToolStripMenuItem,
-            this.autoCorrectToolStripMenuItem});
+            this.autoCorrectToolStripMenuItem,
+            this.autoCorrectToolStripMenuItem1,
+            this.generatesFilesToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -88,9 +92,16 @@
             // buildToolStripMenuItem
             // 
             this.buildToolStripMenuItem.Name = "buildToolStripMenuItem";
-            this.buildToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.buildToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.buildToolStripMenuItem.Text = "&Build";
             this.buildToolStripMenuItem.Click += new System.EventHandler(this.buildToolStripMenuItem_Click);
+            // 
+            // autoCorrectToolStripMenuItem
+            // 
+            this.autoCorrectToolStripMenuItem.Name = "autoCorrectToolStripMenuItem";
+            this.autoCorrectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoCorrectToolStripMenuItem.Text = "Check";
+            this.autoCorrectToolStripMenuItem.Click += new System.EventHandler(this.autoCorrectToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -146,13 +157,6 @@
             this.richTextBox1.Text = "";
             this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
-            // autoCorrectToolStripMenuItem
-            // 
-            this.autoCorrectToolStripMenuItem.Name = "autoCorrectToolStripMenuItem";
-            this.autoCorrectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.autoCorrectToolStripMenuItem.Text = "AutoCorrect";
-            this.autoCorrectToolStripMenuItem.Click += new System.EventHandler(this.autoCorrectToolStripMenuItem_Click);
-            // 
             // richTextBox2
             // 
             this.richTextBox2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -161,6 +165,20 @@
             this.richTextBox2.Size = new System.Drawing.Size(530, 246);
             this.richTextBox2.TabIndex = 0;
             this.richTextBox2.Text = "";
+            // 
+            // autoCorrectToolStripMenuItem1
+            // 
+            this.autoCorrectToolStripMenuItem1.Name = "autoCorrectToolStripMenuItem1";
+            this.autoCorrectToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.autoCorrectToolStripMenuItem1.Text = "AutoCorrect";
+            this.autoCorrectToolStripMenuItem1.Click += new System.EventHandler(this.autoCorrectToolStripMenuItem1_Click);
+            // 
+            // generatesFilesToolStripMenuItem
+            // 
+            this.generatesFilesToolStripMenuItem.Name = "generatesFilesToolStripMenuItem";
+            this.generatesFilesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.generatesFilesToolStripMenuItem.Text = "Generates files";
+            this.generatesFilesToolStripMenuItem.Click += new System.EventHandler(this.generatesFilesToolStripMenuItem_Click);
             // 
             // CS_FormMain
             // 
@@ -200,6 +218,8 @@
         private System.Windows.Forms.ToolStripMenuItem buildToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoCorrectToolStripMenuItem;
         private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.ToolStripMenuItem autoCorrectToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem generatesFilesToolStripMenuItem;
     }
 }
 
